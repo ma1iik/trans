@@ -1,0 +1,304 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pong Game</title>
+    <link rel="icon" href="{% static 'assets/favicon.ico' %}" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/1container-styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/2container-styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/3container-styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/gamecontainer.css' %}">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <link rel="stylesheet" href="{% static 'css/video-background.css' %}">
+    <link rel="stylesheet" href="{% static 'css/small-windows.css' %}">
+    <link rel="stylesheet" href="{% static 'css/pong-container.css' %}">
+    <link rel="stylesheet" href="{% static 'css/private-game-buttons/private-game-buttons.css' %}">
+</head>
+<body>
+
+    {% if not token %}
+    <div class="blur-background"></div>
+    <div class="centered-text">
+        <h2 class="login-message">Please login with 42 to access transcendence</h2>
+        <button id="login-button" onclick="redirectToLogin()">Login with 42</button>
+    </div>
+    {% endif %}
+    <div id="loading-container">
+        <div class="loader"></div>
+      </div>
+    <!--navbar-->
+    <nav class="navbar navbar-expand bg-body-tertiary navbar-custom">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+                    <button class="nav-button play" data-button="play">
+                        <i class="bi bi-controller nav-icons"></i>
+                    </button>
+                    <button class="nav-button chat active" data-button="chat">
+                        <i class="bi bi-chat-dots nav-icons"></i>
+                    </button>
+                    <button class="nav-button friends" data-button="profile">
+                        <i class="bi bi-person nav-icons"></i>
+                    </button>
+
+                    <button class="nav-button settings" data-button="settings">
+                        <i class="bi bi-gear nav-icons"></i>
+                    </button>
+                    <!-- Profile picture and separator -->
+                    <div class="profile-separator d-none d-lg-block"></div>
+                    <a class="nav-link d-none d-lg-block" href="#">
+                        <div class="profile-pic-wrapper">
+                            <img src="{% static 'assets/pfp.png' %}" class="profile-pic" />
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>    
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- FIRST TAB -->
+            <div class="col-3 col-lg-3 first-tab">
+                <div class="inner-container1 mx-1">
+                    <div class="social-section">
+                        <i class="bi bi-people social-icon"></i>
+                        <span id="socialText" class="social-text">{{ translations.social }}</span>
+                    </div>
+                    <div class="button-container">
+                        <div class="FriendsChannels">
+                            <button class="social-button" id="button1">{{ translations.friends }}</button>
+                            <button class="social-button active" id="button2">{{ translations.chats }}</button>
+                        </div>
+                        <!-- Content for Friends -->
+                        <div id="friendsContainer" class="content-container"  style="display: none;">
+                            <button class="add-friend-button">{{ translations.add_friend }}</button>
+                            <div class="friends-list" id="friendsList">
+                                <i class="bi bi-people bi-peopleMain"></i> {{ translations.frds }} <i class="bi bi-arrow-clockwise refresh-icon "></i>
+                            </div>
+                            <div id="friends-list-content" class="friends-list-content"></div>
+                            <!-- <button class="friend-tab-button" id="friendsTab">
+                                <i class="bi bi-people"></i> {{ translations.frds }} <i class="bi bi-chevron-down arrow-icon"></i>
+                            </button>
+                            <div id="friendsTabContent" class="friends-tab-content">
+                            </div> -->
+                        
+                            <button class="friend-tab-button" id="outgoingRequestsTab">
+                                <i class="bi bi-arrow-bar-right"></i> {{ translations.out_req }} <i class="bi bi-chevron-down arrow-icon"></i>
+                            </button>
+                            <!-- Content container for Outgoing Requests -->
+                            <div id="outgoingRequestsTabContent" class="friends-tab-content">
+                            </div>
+                        
+                            <button class="friend-tab-button" id="incomingRequestsTab">
+                                <i class="bi bi-arrow-bar-left"></i> {{ translations.inc_req }} <i class="bi bi-chevron-down arrow-icon"></i>
+                            </button>
+                            <!-- Content container for Incoming Requests -->
+                            <div id="incomingRequestsTabContent" class="friends-tab-content">
+                            </div>
+                            <button class="friend-tab-button" id="blockedTab">
+                                <i class="bi bi-slash-circle"></i> {{ translations.blocked }} <i class="bi bi-chevron-down arrow-icon"></i>
+                            </button>
+                            <!-- Content container for Blocked -->
+                            <div id="blockedTabContent" class="friends-tab-content">
+                            </div>
+                        </div>
+                        <!-- Chats Container -->
+                        <div id="chatsContainer" class="content-container">
+                            <div id="chatsTabContent" class="chats-tab-content">
+                                <div class="chats-item global-chat-item">
+                                    <i class="bi bi-globe2 global-chat-icon"></i>
+                                    <div class="friend-info">
+                                        <div id="glo_cha">{{ translations.glo_cha }}</div>
+                                    </div>
+                                    <i class="bi bi-chat chats-icon "></i>
+                                </div>
+
+                                <!-- <div id="chatsTabContent2 "class="chatsTabContent2">
+                                    <div class="chats-item" data-id="channelId1">
+                                        <img src="{% static 'assets/pfp.png' %}" alt="Friend's Name" class="friend-image">
+                                        <div class="friend-info">
+                                            <div>Friends Name</div>
+                                        </div>
+                                        <i class="bi bi-chat channels-chat icon-chat"></i> 
+                                    </div>
+                                </div> -->
+
+
+                                <!-- <div class="chats-item"  data-id="channelId2">
+                                    <img src="{% static 'assets/pfp.png' %}" alt="Friend's Name" class="friend-image">
+                                    <div class="friend-info">
+                                        <div>Channelss Name</div>
+                                    </div>
+                                    <i class="bi bi-chat channels-chat icon-chat"></i>
+                                    <i class="bi bi-gear channels-settings icon-settings"></i> 
+                                </div> -->
+                                <div id="chatsTabContent2" class="chats-tab-content2">
+                            </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- SECOND TAB -->
+            <div class="col-6 col-lg-6 3cols second-tab";>
+                <div class="inner-container2 mx-1" id="inner-container2">
+                    <div class="chat-tab">
+                        <div class="chat-heading">
+                            <i class="bi bi-chat-dots chat-icon"></i>
+                            <span class="social-text" id="social-text">{{ translations.messages }}: {{translations.genchat}}</span>
+                        </div>
+                         <div class="chat-messages" id="" data-id="global" style="display: block;">
+                            <!-- MESSAGE EXANMPLE -->
+
+                            
+                                                
+                        </div>
+                        <div class="message-input-area">
+                            <input type="text" class="message-input" placeholder="{{ translations.message_ph }}">
+                            <button id="send-button" class="send-button">{{ translations.send }}</button>
+                        </div>
+                    </div>
+                    <div class="settings-tab">
+                        <!-- Settings Heading -->
+                        <div class="settings-heading">
+                            <i class="bi bi-gear settings-icon"></i>
+                            <span id="settingsText" class="social-text">{{ translations.settings }}</span>
+                        </div>
+                    
+                        <!-- User Profile Section -->
+                        <div class="settings-body">
+                            <div class="pfp-container">
+                                <img src="{% static 'assets/pfp.png' %}" alt="User Profile" class="user-pfp pfp-settings">
+                            </div>
+
+                            <div class="user-info">
+                                <div id="username-labelId" class="username-label">{{ translations.user_name }}</div>
+                                <div class="username-and-button">
+                                    <div id="current-username" class="current-username">CurrentUsername</div>
+                                    <button id="change-username-button" class="change-username-button">{{ translations.change }}</button>
+                                </div>
+                            </div>
+                            <!-- Language Selection Section -->
+                            <div class="language-selection">
+                                <div id="language-label" class="language-label">{{ translations.language }}</div>
+                                <div class="language-dropdown">
+                                    <select id="selectLanguage" class="language-select">
+                                        <option id="enVal" value="en">{{ translations.en }}</option>
+                                        <option id="frVal" value="fr">{{ translations.fr }}</option>
+                                        <option id="itVal" value="it">{{ translations.it }}</option>
+                                    </select>                                    
+                                    <!-- <button id="changeLanguageButton" class="change-language-button">{{ translations.change }}</button> -->
+                                </div>
+                            </div>
+                            <div class="settings-actions">
+                                <button id="logout-button" class="settings-button logout-button">{{ translations.logout }}</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-tab">
+                        <!-- User Profile Heading -->
+                        <div class="user-profile-heading">
+                            <div id="profile-pfp">
+                                <img id="userPfp" src="{% static 'assets/pfp.png' %}" alt="User" class="user-pfp">
+                            </div>
+                            <div class="user-details">
+                                <div id="username" class="username">Username</div>
+                                <div class="additional-info">
+                                    <span id="joinedDate">{{ translations.joined }}</span>
+                                    <span id="matchesPlayed">{{ translations.mtch_plyd }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="profileBody" class="profile-body">
+                            <div class="game-history">
+                                
+                            </div>
+                            <div id="userStats" class="user-stats">
+                              
+                            </div>
+                        </div>
+                    </div>
+                    <div class="game-container">
+                        <div id="button-container">
+                            <button id="duelId" class="send-button">{{ translations.duel }}</button>
+                            <button id="tournId" class="send-button">{{ translations.tourn }}</button>
+                            <button id="crt_priv" class="send-button create-private-game-button">{{ translations.crt_priv }}</button>
+                            <button id="join_priv" class="send-button join-private-game-form-button">{{ translations.join_priv }}</button>
+                        </div>
+                        <div id="principal-container">
+                            <div id="tournament-form" class="form-container">
+                            </div>
+                            <div id="join-private-game-div" class="form-container">
+                                <form id="join-private-game-form">
+                                    <input type="text" class="input-private-game-id" required="" placeholder="{{ translations.privid}}">
+                                    <button id="joinPrivGame" type="button" class="send-button join">{{ translations.join }}</button>
+                                </form>
+                            </div>
+                            <div id="pong-container">
+                                <button type="button" class="send-button cancel" id="cancel-game-button">{{ translations.cancel_game_text }}</button>
+                                <div class="waiting-overlay" id="waitingOverlay">
+                                    <div id="waiting-text" class="waiting-text">{{ translations.wfo}}</div>
+                                </div>
+                                <canvas id="gameCanvas" width="100" height="100"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+            <!-- THIRD TAB -->
+            <div class="col-3 col-lg-3 third-tab">
+                <div class="inner-container3 mx-1">
+                    <div class="career-select">
+                        <i class="bi bi-clock-history clock-icon"></i>
+                        <span id="career-text" class="career-text">{{ translations.fp }}</span>
+                    </div>
+                    <!-- Friends List Content -->
+                    <div id="friends-list-content3" class="friends-list-content3">
+                        <!-- Additional friend items will be similar -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        window.translatedMessages = "{{ translations.messages }}";
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        var CALLBACK_LINK = "{{ CALLBACK_LINK }}";
+    </script>
+    <script src="{% static 'js/writing.js' %}"></script>
+    <script src="{% static 'js/navigation.js' %}"></script>
+    <script src="{% static 'js/tabManagement.js' %}"></script>
+    <script src="{% static 'js/smallButtons.js' %}"></script>
+    <script src="{% static 'js/game_pannel/gameForm.js' %}"></script>
+    <script src="{% static 'js/game_pannel/game/pong.js' %}"></script>
+    <script src="{% static 'js/game_pannel/game/localPong.js' %}"></script>
+    <script src="{% static 'js/game_pannel/duel.js' %}"></script>
+    <script src="{% static 'js/game_pannel/gameMessages.js' %}"></script>
+    <script src="{% static 'js/game_pannel/tournament.js' %}"></script>
+    <script src="{% static 'js/login.js'%}"></script>
+    <script src="{% static 'js/modalManagement.js' %}"></script>
+    <script src="{% static 'js/ajaxCalls1Tab.js' %}"></script>
+    <script src="{% static 'js/globalChat.js' %}"></script>
+
+    <script src="{% static 'js/webSocket.js' %}"></script>
+    <script src="{% static 'js/thirdTab.js' %}"></script>
+    <script src="{% static 'js/firstTab.js' %}"></script>
+    <script src="{% static 'js/secondTab.js' %}"></script>
+
+    <script src="{% static 'js/game_pannel/privateGames.js' %}"></script>
+
+</body>
+</html>
