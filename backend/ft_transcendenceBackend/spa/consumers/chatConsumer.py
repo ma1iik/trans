@@ -16,23 +16,53 @@ global_channel_layer = get_channel_layer()
 connected_users = set()
 print_users_task = None  # Global variable to hold the asyncio task
 
+# async def print_connected_users():
+#     while True:
+#         # async with lock:
+#         #     connected_users.clear()
+#         connected_usernames = [user.username for user in connected_usernames]
+#         print(f"Connected users: {', '.join(connected_usernames)}")
+#         await global_channel_layer.group_send(
+#             'global',
+#             {
+#                 'type': 'ping',
+#                 'message': 'PINGING USERS',
+#             }
+#         )
+#         await asyncio.sleep(5)
+#         # Print the currently connected users
+
+
 async def print_connected_users():
     while True:
-        connected_usernames = [user.username for user in connected_users]
-        print(f"Connected users: {', '.join(connected_usernames)}")
+        async with lock:
+            # Set all users to offline before sending the ping
+            await sync_to_async(CustomUser.objects.all().update)(is_online=False)
+            connected_users.clear()
+            
         await global_channel_layer.group_send(
-                'global',
-                {
-                    'type': 'ping',
-                    'message': 'PINGING USERS',
-                }
-            )
+            'global',
+            {
+                'type': 'ping',
+                'message': 'PINGING USERS',
+            }
+        )
+        await asyncio.sleep(1)
+
+        async with lock:
+            connected_usernames = [user.username for user in connected_users]
+            for user in connected_users:
+                user.is_online = True
+                await database_sync_to_async(user.save)()
+                
+        print(f"Connected users: {', '.join(connected_usernames)}")
         await asyncio.sleep(5)
+
 
 class chatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         global print_users_task
-        print("CONNECTION")
+        print("CONNECTIONARRR")
         self.user_id, self.username = extract_user_info_from_token(self.scope['session'].get('token'))
 
         if self.user_id is None or self.username is None:
@@ -115,6 +145,16 @@ class chatConsumer(AsyncWebsocketConsumer):
                     }
                 )
 
+        elif text_data_json.get("type") == 'pong':
+            user_id = text_data_json.get("user_id")
+            print(f"PONG RECEIVED from {user_id}")
+            try:
+                user = await sync_to_async(CustomUser.objects.get)(userid=user_id)
+                async with lock:
+                    connected_users.add(user)
+            except CustomUser.DoesNotExist:
+                pass
+
         elif text_data_json.get("type") == 'game.invite.send':
             target_user_id = text_data_json.get("target_user_id")
             target_user_name = text_data_json.get("target_user_name")
@@ -181,8 +221,8 @@ class chatConsumer(AsyncWebsocketConsumer):
                 'message': "Invitation successfully sent to " + str(target_user_name),
             }))
     
-    async def ping(self, eveny):
+    async def ping(self, event):
         await self.send(text_data=json.dumps({
             'type': 'ping',
-            'message': "YOU GOT PEGGED"
+            'message': "PING"
         }))

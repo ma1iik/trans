@@ -1,0 +1,411 @@
+.inner-container1 {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid rgba(124, 48, 155, 0.7);
+    border-radius: 10px;
+    padding: 0px;
+    margin-top: 18vh;
+    height: 75vh;
+    background-color: #ddd;
+    opacity: 0.85;
+    flex-shrink: 0;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    box-shadow: 10px 20px 10px rgb(21, 1, 37);
+    margin-bottom: 30px;
+}
+
+.container-fluid {
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+/* .row {
+
+} */
+
+
+/* Social section */
+
+.social-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(124, 48, 155, 0.7);
+    border-radius: 8px 8px 0 0;
+    padding: 5px;
+    margin: 0px;
+}
+
+.social-icon {
+    font-size: 22px;
+    padding-left: 10px;
+    margin-right: 10px;
+}
+
+.button-container {
+    max-height: 63vh;
+    overflow-y: auto;
+    flex: 1; 
+    min-width: 100px; 
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+.FriendsChannels {
+    display: flex;
+    justify-content: space-around;
+}
+
+.social-button {
+    background-color: transparent;
+    font-family: 'Jost', sans-serif;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    width: 40%; 
+    margin: 10px 2.5%; 
+    padding: 5px; 
+}
+
+#button2 {
+    margin-left: auto; 
+}
+
+.social-button.active {
+    color: rgba(164, 94, 202);
+    border-bottom: 2px solid rgba(164, 94, 202);
+    padding: 5px;
+}
+
+.social-text {
+    font-size: 20px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: -0.03em;
+}
+
+/* add friend button */
+
+.add-friend-button {
+    background-color: rgba(0, 128, 0, 0.5);
+    color: white; 
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s;
+    font-size: 15px;
+    width: 95%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 1rem;
+}
+
+.add-friend-button:hover {
+    background-color: rgba(0, 128, 0, 0.7);
+
+}
+
+/* channels btoons */
+
+.create-channel-button, .join-channel-button {
+    background-color: rgba(0, 128, 0, 0.5);
+    color: white; 
+    border: none;
+    padding: 7px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s;
+    font-size: 12px;
+    width: 95%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 3px;
+    font-size: 1rem;;
+}
+
+.create-channel-button:hover, .join-channel-button:hover {
+    background-color: rgba(0, 128, 0, 0.7);
+
+}
+
+/* friends  requests etc*/
+
+.friends-list {
+    width: 95%;
+    border: 2px solid rgba(146, 128, 224, 0.7);
+    font-family: 'Jost', sans-serif;
+    background-color: transparent;
+    padding: 10px;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    justify-content: flex-start;
+    border-radius: 5px;
+    margin: 10px auto;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom: none;
+    margin-bottom: 0;
+    background-color: rgba(146, 128, 224, 0.7);
+    font-size: 1.15rem;
+}
+
+
+.friend-tab-button {
+    width: 95%;
+    border: 2px solid rgba(146, 128, 224, 0.7);
+    background-color: transparent;
+    padding: 10px;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    justify-content: flex-start;
+    margin: 10px auto;
+    border-radius: 5px;
+    background-color: rgba(146, 128, 224, 0.7);
+    font-size: 1.15rem;
+}
+
+.friend-tab-button.active-tab {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.friend-tab-button i:not(.arrow-icon) {
+    margin-right: 10px;
+}
+
+/* Style for the arrow icon */
+.arrow-icon, .refresh-icon {
+    margin-left: auto;
+}
+
+.bi-peopleMain {
+    margin-right: 10px;
+}
+
+.arrow-up {
+    transform: rotate(180deg);
+}
+
+.friends-list-content {
+    width: 95%;
+    padding: 10px;
+    font-family: 'Poppins', italic;
+    border: 2px solid rgba(173, 102, 255, 0.7) !important;
+    text-align: left;
+    justify-content: flex-start;
+    border-top: none;
+    margin-bottom: 10px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    display: block;
+    margin: auto;
+    background-color: #ddd;
+}
+
+.friends-tab-content {
+    width: 95%;
+    padding: 10px;
+    border: 2px solid rgba(173, 102, 255, 0.7);
+    text-align: left;
+    justify-content: flex-start;
+    border-top: none;
+    margin-bottom: 10px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    display: none;
+    margin: auto;
+    background-color: #ddd;
+}
+
+
+/* cards in friends tab */
+
+
+.friend-item {
+    max-width: 100%;
+    border: 2px solid rgba(173, 102, 255, 0.7);    
+    width: 95%;
+    background-color: transparent;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 1px auto;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    padding: 5px;
+    /* background-color:#b0d5fc; */
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #f0f0f0;
+}
+
+.friend-info {
+    /* flex-grow: 1; */
+    margin-right: auto;
+    font-size: 1.1rem;
+}
+
+.friend-icons {
+    justify-content: center;
+}
+
+/* .small-icons {
+    font-size: 15px;
+    margin-left: auto; 
+    cursor: pointer;
+    padding: 0 5px; 
+    color: black;
+} */
+
+.icon-chat:hover, .icon-controller:hover {
+    color: rgba(164, 94, 202);
+}
+
+.bi-x-circle:hover {
+    color: rgb(190, 44, 44);
+}
+
+.bi-check-circle:hover {
+    color: rgb(44, 190, 98);
+}
+
+.friend-image {
+    display: flex;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 25%;
+    /* margin-right: 15px; */
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    margin-right: 15px;
+    object-fit: cover;
+
+}
+
+.profile-picture-container {
+    position: relative;
+    display: inline-block;
+}
+
+.online-status {
+    position: absolute;
+    bottom: -15%;
+    width: 13px;
+    right: 20%;
+    height: 13px;
+    background-color:  rgba(0, 128, 0);
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+.offline-status {
+    position: absolute;
+    bottom: -15%;
+    width: 13px;
+    right: 20%;
+    height: 13px;
+    background-color:  rgb(256, 0, 0);
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+.ingame-status {
+    position: absolute;
+    bottom: -15%;
+    width: 13px;
+    right: 20%;
+    height: 13px;
+    background-color:  rgb(0, 174, 255);
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+.status-tooltip {
+    display: none;
+    position: absolute;
+    bottom: -100%;
+    left: 350%;
+    transform: translateX(-50%);
+    padding: 5px;
+    border-radius: 3px;
+    color: white;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.online-status:hover .status-tooltip,
+.offline-status:hover .status-tooltip,
+.ingame-status:hover .status-tooltip {
+    display: block;
+    font-size : 0.7em;
+}
+
+.online-status:hover .status-tooltip {
+    background-color: rgba(0, 128, 0);
+}
+
+.offline-status:hover .status-tooltip {
+    background-color: rgb(256, 0, 0);
+}
+
+.ingame-status:hover .status-tooltip {
+    background-color: rgb(0, 174, 255);
+}
+
+
+/* cards in channels tab */
+
+.global-chat-icon{
+    /*  */
+    padding: 0 2px;
+    font-size: 20px;
+    margin-right: 0.6rem;
+    margin-left: 0.1rem;
+    font-size: 2rem;
+    
+}
+
+.global-chat-item:hover, .chats-item:hover {
+    color: rgba(164, 94, 202); 
+    border: 2px solid rgba(173, 102, 255, 0.7);
+}
+
+.chats-item {   
+    width: 100%;
+    background-color: transparent;
+    font-family: 'Jost', sans-serif;
+    display: flex;
+    justify-content: flex-start; 
+    margin: 1px auto;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    padding: 5px;
+    /* background-color:#b0d5fc; */
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #f0f0f0;
+}
+
+.chats-tab-content {
+    width: 100%;
+    padding: 10px;
+    text-align: left;
+    justify-content: flex-start;
+    margin: auto;
+}
+
+.chats-icon {
+    padding: 3px;
+    padding-right: 7px;
+}
