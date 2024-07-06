@@ -3,39 +3,25 @@ let settingsLan;
 let profileLan;
 let playLan;
 
-let intervalIdChat;
+let intervalId;
+let profileIntervalId;
 
-function startIntervalChat() {
-    intervalIdChat = setInterval(() => {
-        fetchFriends();
-    }, 3000);
+function startInterval(callback) {
+    intervalId = setInterval(callback, 2500);
 }
 
-function stopIntervalChat() {
-    if (intervalIdChat) {
-        clearInterval(intervalIdChat);
-        intervalIdChat = null;
-    }
+function stopInterval() {
+    clearInterval(intervalId);
+    intervalId = null;
 }
 
-let intervalIdProfile;
-
-function startIntervalProfile() {
-    intervalIdProfile = setInterval(() => {
-        fetchUserSettings().then(() => {
-            fetchFriendsList();
-            fetchUserData(userId);
-        }).catch(error => {
-            console.error('Error fetching user settings:', error);
-        });
-    }, 3000);
+function startProfileInterval(callback) {
+    profileIntervalId = setInterval(callback, 2500);
 }
 
-function stopIntervalProfile() {
-    if (intervalIdProfile) {
-        clearInterval(intervalIdProfile);
-        intervalIdProfile = null;
-    }
+function stopProfileInterval() {
+    clearInterval(profileIntervalId);
+    profileIntervalId = null;
 }
 
 function adjustGameContainerSize() {
@@ -91,8 +77,7 @@ function showTab(route) {
 
     switch (route) {
         case 'play':
-            stopIntervalProfile();
-            stopIntervalChat();
+            stopProfileInterval();
             injectBlock();
             adjustGameContainerSize();
             setContainerVisibility(firstTab, false, 'left-slide-out', 'left-slide-in');
@@ -123,10 +108,10 @@ function showTab(route) {
             settingsTab.style.display = 'none';
             profileTab.style.display = 'none';
             gameTab.style.display = 'none';
+            startInterval(fetchFriends);
             break;
         case 'settings':
-            stopIntervalProfile();
-            stopIntervalChat();
+            stopInterval();
             removeBlock();
             gameContainer.style.height = "75vh";
             setContainerVisibility(firstTab, false, 'left-slide-out', 'left-slide-in');
@@ -142,8 +127,7 @@ function showTab(route) {
             gameTab.style.display = 'none';
             break;
         case 'profile':
-            startIntervalProfile();
-            stopIntervalChat();
+            stopInterval();
             removeBlock();
             gameContainer.style.height = "75vh";
             chatTab.style.display = 'none';
@@ -159,6 +143,7 @@ function showTab(route) {
             setContainerVisibility(thirdTab, true, 'right-slide-out', 'right-slide-in');
             // fetchUserData(userId);
             // fetchFriendsList();
+            startProfileInterval(fetchFriendsList);
             fetchUserSettings().then(() => {
                 fetchFriendsList();
                 fetchUserData(userId);
