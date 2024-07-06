@@ -3,18 +3,38 @@ let settingsLan;
 let profileLan;
 let playLan;
 
-let intervalId;
+let intervalIdChat;
 
-function startInterval() {
-    intervalId = setInterval(() => {
+function startIntervalChat() {
+    intervalIdChat = setInterval(() => {
         fetchFriends();
     }, 3000);
 }
 
-function stopInterval() {
-    if (intervalId) {
-        clearInterval(intervalId);
-        intervalId = null;
+function stopIntervalChat() {
+    if (intervalIdChat) {
+        clearInterval(intervalIdChat);
+        intervalIdChat = null;
+    }
+}
+
+let intervalIdProfile;
+
+function startIntervalProfile() {
+    intervalIdProfile = setInterval(() => {
+        fetchUserSettings().then(() => {
+            fetchFriendsList();
+            fetchUserData(userId);
+        }).catch(error => {
+            console.error('Error fetching user settings:', error);
+        });
+    }, 3000);
+}
+
+function stopIntervalProfile() {
+    if (intervalIdProfile) {
+        clearInterval(intervalIdProfile);
+        intervalIdProfile = null;
     }
 }
 
@@ -71,7 +91,8 @@ function showTab(route) {
 
     switch (route) {
         case 'play':
-            stopInterval();
+            stopIntervalProfile();
+            stopIntervalChat();
             injectBlock();
             adjustGameContainerSize();
             setContainerVisibility(firstTab, false, 'left-slide-out', 'left-slide-in');
@@ -87,7 +108,8 @@ function showTab(route) {
             gameTab.style.display = 'block';
             break;
         case 'chat':
-            startInterval();
+            stopIntervalProfile();
+            startIntervalChat();
             removeBlock();
             gameContainer.style.height = "75vh";
             setContainerVisibility(firstTab, true, 'left-slide-out', 'left-slide-in');
@@ -103,7 +125,8 @@ function showTab(route) {
             gameTab.style.display = 'none';
             break;
         case 'settings':
-            stopInterval();
+            stopIntervalProfile();
+            stopIntervalChat();
             removeBlock();
             gameContainer.style.height = "75vh";
             setContainerVisibility(firstTab, false, 'left-slide-out', 'left-slide-in');
@@ -119,7 +142,8 @@ function showTab(route) {
             gameTab.style.display = 'none';
             break;
         case 'profile':
-            stopInterval();
+            startIntervalProfile();
+            stopIntervalChat();
             removeBlock();
             gameContainer.style.height = "75vh";
             chatTab.style.display = 'none';
