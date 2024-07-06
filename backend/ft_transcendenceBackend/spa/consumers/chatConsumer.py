@@ -14,32 +14,17 @@ lock = asyncio.Lock()
 global_channel_layer = get_channel_layer()
 
 connected_users = set()
+previous_connected_users = set()
 print_users_task = None  # Global variable to hold the asyncio task
-
-# async def print_connected_users():
-#     while True:
-#         # async with lock:
-#         #     connected_users.clear()
-#         connected_usernames = [user.username for user in connected_usernames]
-#         print(f"Connected users: {', '.join(connected_usernames)}")
-#         await global_channel_layer.group_send(
-#             'global',
-#             {
-#                 'type': 'ping',
-#                 'message': 'PINGING USERS',
-#             }
-#         )
-#         await asyncio.sleep(5)
-#         # Print the currently connected users
 
 
 async def print_connected_users():
     while True:
         async with lock:
-            # Set all users to offline before sending the ping
-            await sync_to_async(CustomUser.objects.all().update)(is_online=False)
+            previous_connected_users, current_connected_users = connected_users.copy(), connected_users.copy()
             connected_users.clear()
-            
+            # print("Previous connected users:", [user.username for user in previous_connected_users])
+
         await global_channel_layer.group_send(
             'global',
             {
@@ -47,17 +32,21 @@ async def print_connected_users():
                 'message': 'PINGING USERS',
             }
         )
-        await asyncio.sleep(1)
+        await asyncio.sleep(0.5)
+        # print("Current connected users:", [user.username for user in connected_users])
 
         async with lock:
-            connected_usernames = [user.username for user in connected_users]
-            for user in connected_users:
-                user.is_online = True
-                await database_sync_to_async(user.save)()
-                
-        print(f"Connected users: {', '.join(connected_usernames)}")
-        await asyncio.sleep(5)
+            disconnected_users = previous_connected_users - connected_users
+            # print("Disconnected users:", [user.username for user in disconnected_users])
 
+            for user in disconnected_users:
+                user.is_online = False
+                user.is_ingame = False
+                await database_sync_to_async(user.save)()
+                print(f"Set {user.username} offline")
+
+
+        await asyncio.sleep(3)
 
 class chatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -69,13 +58,13 @@ class chatConsumer(AsyncWebsocketConsumer):
             await self.close()
             return
         self.userObject = await database_sync_to_async(CustomUser.objects.get)(userid=str(self.user_id))
+        self.userObject.is_online = True
         connected_users.add(self.userObject)
         async with lock:
-            self.userObject.online_counter += 1
-            if self.userObject.online_counter == 1:
-                self.userObject.is_online = True
+            # self.userObject.online_counter += 1
+            # if self.userObject.online_counter == 1:
+            self.userObject.is_online = True
             await database_sync_to_async(self.userObject.save)()
-        print("1Current connections : ", self.userObject.online_counter)
         self.room_group_name = 'global'
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
@@ -92,15 +81,15 @@ class chatConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         print("DISCONNECTION")
-        connected_users.remove(self.userObject)
+        # connected_users.remove(self.userObject)
         async with lock:
-            self.userObject.online_counter -= 1
-            if self.userObject.online_counter == 0:
-                self.userObject.is_online = False
+            # self.userObject.online_counter -= 1
+            # if self.userObject.online_counter == 0:
+            self.userObject.is_online = False
+            self.userObject.is_ingame = False
             await database_sync_to_async(self.userObject.save)()
     
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
-        print("2Current connections : ", self.userObject.online_counter)
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)

@@ -3,6 +3,21 @@ let settingsLan;
 let profileLan;
 let playLan;
 
+let intervalId;
+
+function startInterval() {
+    intervalId = setInterval(() => {
+        fetchFriends();
+    }, 3000);
+}
+
+function stopInterval() {
+    if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+    }
+}
+
 function adjustGameContainerSize() {
     const gameContainer = document.getElementById('inner-container2');
     if (gameContainer) {
@@ -56,6 +71,7 @@ function showTab(route) {
 
     switch (route) {
         case 'play':
+            stopInterval();
             injectBlock();
             adjustGameContainerSize();
             setContainerVisibility(firstTab, false, 'left-slide-out', 'left-slide-in');
@@ -71,6 +87,7 @@ function showTab(route) {
             gameTab.style.display = 'block';
             break;
         case 'chat':
+            startInterval();
             removeBlock();
             gameContainer.style.height = "75vh";
             setContainerVisibility(firstTab, true, 'left-slide-out', 'left-slide-in');
@@ -86,6 +103,7 @@ function showTab(route) {
             gameTab.style.display = 'none';
             break;
         case 'settings':
+            stopInterval();
             removeBlock();
             gameContainer.style.height = "75vh";
             setContainerVisibility(firstTab, false, 'left-slide-out', 'left-slide-in');
@@ -101,6 +119,7 @@ function showTab(route) {
             gameTab.style.display = 'none';
             break;
         case 'profile':
+            stopInterval();
             removeBlock();
             gameContainer.style.height = "75vh";
             chatTab.style.display = 'none';

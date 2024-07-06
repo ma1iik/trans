@@ -75,7 +75,6 @@ function connectWebSocket() {
                     method: 'GET',
                     dataType: 'json',
                     success: function(data) {
-                        console.log(data.user_details.userid);
                         chatSocket.send(JSON.stringify({
                             'type': 'pong',
                             'user_id': data.user_details.userid
