@@ -32,7 +32,7 @@ async def print_connected_users():
                 'message': 'PINGING USERS',
             }
         )
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(0.15)
         # print("Current connected users:", [user.username for user in connected_users])
 
         async with lock:
@@ -64,6 +64,7 @@ class chatConsumer(AsyncWebsocketConsumer):
             # self.userObject.online_counter += 1
             # if self.userObject.online_counter == 1:
             self.userObject.is_online = True
+            self.userObject.is_ingame = False
             await database_sync_to_async(self.userObject.save)()
         self.room_group_name = 'global'
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)

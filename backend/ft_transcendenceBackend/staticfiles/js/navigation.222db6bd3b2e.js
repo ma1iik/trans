@@ -3,35 +3,45 @@ let settingsLan;
 let profileLan;
 let playLan;
 
-let intervalIdChat;
+let intervalId;
 
-function startIntervalChat() {
-    intervalIdChat = setInterval(() => {
+function startInterval() {
+    intervalId = setInterval(() => {
         fetchFriends();
-    }, 3000);
+    }, 2500);
 }
 
-function stopIntervalChat() {
-    if (intervalIdChat) {
-        clearInterval(intervalIdChat);
-        intervalIdChat = null;
+function stopInterval() {
+    if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
     }
 }
 
-let intervalIdProfile;
+let profileCheckIntervalId;
 
-function startIntervalProfile() {
-    intervalIdProfile = setInterval(() => {
-        fetchFriendsList();
-    }, 3000);
-}
-
-function stopIntervalProfile() {
-    if (intervalIdProfile) {
-        clearInterval(intervalIdProfile);
-        intervalIdProfile = null;
+// Start the profile check interval
+function startProfileCheckInterval() {
+    if (!profileCheckIntervalId) {
+        profileCheckIntervalId = setInterval(() => {
+            const profileTabButton = document.querySelector('.nav-button[data-button="profile"]');
+            if (profileTabButton && profileTabButton.classList.contains('active')) {
+                fetchFriends();
+            }
+        }, 3000);
     }
 }
+
+// Stop the profile check interval
+function stopProfileCheckInterval() {
+    if (profileCheckIntervalId) {
+        clearInterval(profileCheckIntervalId);
+        profileCheckIntervalId = null;
+    }
+}
+
+// Always start the interval when the script loads
+startProfileCheckInterval();
 
 function adjustGameContainerSize() {
     const gameContainer = document.getElementById('inner-container2');
@@ -86,8 +96,7 @@ function showTab(route) {
 
     switch (route) {
         case 'play':
-            stopIntervalChat()
-            stopIntervalProfile() 
+            stopInterval();
             injectBlock();
             adjustGameContainerSize();
             setContainerVisibility(firstTab, false, 'left-slide-out', 'left-slide-in');
@@ -103,8 +112,7 @@ function showTab(route) {
             gameTab.style.display = 'block';
             break;
         case 'chat':
-            startIntervalChat();
-            stopIntervalProfile() 
+            startInterval();
             removeBlock();
             gameContainer.style.height = "75vh";
             setContainerVisibility(firstTab, true, 'left-slide-out', 'left-slide-in');
@@ -120,8 +128,7 @@ function showTab(route) {
             gameTab.style.display = 'none';
             break;
         case 'settings':
-            stopIntervalChat()
-            stopIntervalProfile() 
+            stopInterval();
             removeBlock();
             gameContainer.style.height = "75vh";
             setContainerVisibility(firstTab, false, 'left-slide-out', 'left-slide-in');
@@ -137,8 +144,7 @@ function showTab(route) {
             gameTab.style.display = 'none';
             break;
         case 'profile':
-            startIntervalProfile();
-            stopIntervalChat()
+            stopInterval();
             removeBlock();
             gameContainer.style.height = "75vh";
             chatTab.style.display = 'none';

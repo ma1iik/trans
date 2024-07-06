@@ -3,18 +3,33 @@ let settingsLan;
 let profileLan;
 let playLan;
 
-let intervalId;
+let intervalIdChat;
 
-function startInterval() {
-    intervalId = setInterval(() => {
+function startIntervalChat() {
+    intervalIdChat = setInterval(() => {
         fetchFriends();
-    }, 2500);
+    }, 3000);
 }
 
-function stopInterval() {
-    if (intervalId) {
-        clearInterval(intervalId);
-        intervalId = null;
+function stopIntervalChat() {
+    if (intervalIdChat) {
+        clearInterval(intervalIdChat);
+        intervalIdChat = null;
+    }
+}
+
+let intervalIdProfile;
+
+function startIntervalProfile() {
+    intervalIdProfile = setInterval(() => {
+        fetchFriendsList();
+    }, 3000);
+}
+
+function stopIntervalProfile() {
+    if (intervalIdProfile) {
+        clearInterval(intervalIdProfile);
+        intervalIdProfile = null;
     }
 }
 
@@ -71,7 +86,8 @@ function showTab(route) {
 
     switch (route) {
         case 'play':
-            stopInterval();
+            stopIntervalChat()
+            stopIntervalProfile() 
             injectBlock();
             adjustGameContainerSize();
             setContainerVisibility(firstTab, false, 'left-slide-out', 'left-slide-in');
@@ -87,7 +103,8 @@ function showTab(route) {
             gameTab.style.display = 'block';
             break;
         case 'chat':
-            startInterval();
+            startIntervalChat();
+            stopIntervalProfile() 
             removeBlock();
             gameContainer.style.height = "75vh";
             setContainerVisibility(firstTab, true, 'left-slide-out', 'left-slide-in');
@@ -103,7 +120,8 @@ function showTab(route) {
             gameTab.style.display = 'none';
             break;
         case 'settings':
-            stopInterval();
+            stopIntervalChat()
+            stopIntervalProfile() 
             removeBlock();
             gameContainer.style.height = "75vh";
             setContainerVisibility(firstTab, false, 'left-slide-out', 'left-slide-in');
@@ -119,7 +137,8 @@ function showTab(route) {
             gameTab.style.display = 'none';
             break;
         case 'profile':
-            stopInterval();
+            startIntervalProfile();
+            stopIntervalChat()
             removeBlock();
             gameContainer.style.height = "75vh";
             chatTab.style.display = 'none';

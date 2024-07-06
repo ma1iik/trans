@@ -236,33 +236,35 @@ function displayEmpty(containerId) {
 
 /////
 
-// let profileCheckIntervalId;
+let profileCheckIntervalId;
 
-// function startProfileCheckInterval() {
-//     if (!profileCheckIntervalId) {
-//         profileCheckIntervalId = setInterval(() => {
-//             const profileTabButton = document.querySelector('.nav-button[data-button="profile"]');
-//             if (profileTabButton && profileTabButton.classList.contains('active')) {
-//                 fetchFriendsList();
-//             }
-//         }, 3000);
-//     }
-// }
+// Start the profile check interval
+function startProfileCheckInterval() {
+    if (!profileCheckIntervalId) {
+        profileCheckIntervalId = setInterval(() => {
+            const profileTabButton = document.querySelector('.nav-button[data-button="profile"]');
+            if (profileTabButton && profileTabButton.classList.contains('active')) {
+                fetchFriends();
+            }
+        }, 3000);
+    }
+}
 
-// function stopProfileCheckInterval() {
-//     if (profileCheckIntervalId) {
-//         clearInterval(profileCheckIntervalId);
-//         profileCheckIntervalId = null;
-//     }
-// }
+// Stop the profile check interval
+function stopProfileCheckInterval() {
+    if (profileCheckIntervalId) {
+        clearInterval(profileCheckIntervalId);
+        profileCheckIntervalId = null;
+    }
+}
 
+// Always start the interval when the script loads
 /// //
 
 
 document.addEventListener('authenticated', function() {
-    console.log("GROS PROBLEM");
     fetchAllData();
-    // startProfileCheckInterval();
+    startProfileCheckInterval();
 
 
     function fetchAllData() {
