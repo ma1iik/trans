@@ -15,20 +15,14 @@ global_channel_layer = get_channel_layer()
 
 connected_users = set()
 previous_connected_users = set()
-print_users_task = None  # Global variable to hold the asyncio task
-# i = 1
+print_users_task = None
 
 
 async def print_connected_users():
     while True:
         async with lock:
             previous_connected_users, current_connected_users = connected_users.copy(), connected_users.copy()
-            print("Current connected users1:", [user.username for user in connected_users])
-            # global i
-            # if i <= 0:
             connected_users.clear()
-            # i -= 1
-            print("Previous connected users:", [user.username for user in previous_connected_users])
 
 
         await global_channel_layer.group_send(
@@ -39,11 +33,9 @@ async def print_connected_users():
             }
         )
         await asyncio.sleep(0.25)
-        print("Current connected users2:", [user.username for user in connected_users])
 
         async with lock:
             disconnected_users = previous_connected_users - connected_users
-            print("Disconnected users:", [user.username for user in disconnected_users])
 
             for user in disconnected_users:
                 user.is_online = False
@@ -57,15 +49,14 @@ async def print_connected_users():
 class chatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         global print_users_task
-        print("CONNECTIONARRR")
         self.user_id, self.username = extract_user_info_from_token(self.scope['session'].get('token'))
 
         if self.user_id is None or self.username is None:
             await self.close()
             return
         self.userObject = await database_sync_to_async(CustomUser.objects.get)(userid=str(self.user_id))
+        self.userObject.ingame_counter += 1
         self.userObject.is_online = True
-        connected_users.add(self.userObject)
         await database_sync_to_async(self.userObject.save)()
         async with lock:
             self.userObject.online_counter += 1
@@ -86,17 +77,6 @@ class chatConsumer(AsyncWebsocketConsumer):
             'source_user': self.userObject.username,
             'source_user_id': self.user_id,
         }))
-
-    # async def disconnect(self, close_code):
-    #     print("DISCONNECTION")
-    #     async with lock:
-    #         self.userObject.online_counter -= 1
-    #         if self.userObject.online_counter == 0:
-    #             self.userObject.is_online = False
-    #             self.userObject.is_ingame = False
-    #         await database_sync_to_async(self.userObject.save)()
-    
-    #     await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -143,7 +123,6 @@ class chatConsumer(AsyncWebsocketConsumer):
 
         elif text_data_json.get("type") == 'pong':
             user_id = text_data_json.get("user_id")
-            print(f"PONG RECEIVED from {user_id}")
             try:
                 user = await sync_to_async(CustomUser.objects.get)(userid=user_id)
                 async with lock:
@@ -169,7 +148,6 @@ class chatConsumer(AsyncWebsocketConsumer):
                 )
 
     async def disconnect(self, close_code):
-        print("DISCONNECTION")
         if self.userObject.is_online == False:
             async with lock:
                 self.userObject.online_counter -= 1
@@ -211,7 +189,7 @@ class chatConsumer(AsyncWebsocketConsumer):
         target_id = event['target_user_id']
         source_id = event['source_user_id']
         target_user_name = event['target_user_name']
-        room_id = event.get('room_id')  # Added to handle room_id
+        room_id = event.get('room_id')
 
         if str(target_id) == str(self.user_id):
             await self.send(text_data=json.dumps({
@@ -221,7 +199,7 @@ class chatConsumer(AsyncWebsocketConsumer):
                 'source_user_id': source_id,
                 'target_user_id': target_id,
                 'target_user_name': target_user_name,
-                'room_id': room_id,  # Added room_id
+                'room_id': room_id,
             }))
 
         if str(source_id) == str(self.user_id):

@@ -234,36 +234,8 @@ function displayEmpty(containerId) {
     });
 }
 
-/////
-
-// let profileCheckIntervalId;
-
-// function startProfileCheckInterval() {
-//     if (!profileCheckIntervalId) {
-//         profileCheckIntervalId = setInterval(() => {
-//             const profileTabButton = document.querySelector('.nav-button[data-button="profile"]');
-//             if (profileTabButton && profileTabButton.classList.contains('active')) {
-//                 fetchFriendsList();
-//             }
-//         }, 3000);
-//     }
-// }
-
-// function stopProfileCheckInterval() {
-//     if (profileCheckIntervalId) {
-//         clearInterval(profileCheckIntervalId);
-//         profileCheckIntervalId = null;
-//     }
-// }
-
-/// //
-
-
 document.addEventListener('authenticated', function() {
-    console.log("GROS PROBLEM");
     fetchAllData();
-    // startProfileCheckInterval();
-
 
     function fetchAllData() {
         fetchFriends();
