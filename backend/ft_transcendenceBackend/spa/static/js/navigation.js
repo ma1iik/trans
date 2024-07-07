@@ -193,7 +193,7 @@ navButtons.forEach(function(button) {
     });
 });
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('authenticated', function() {
     chatLan = document.getElementById('selectLanguage').value;
     settingsLan = document.getElementById('selectLanguage').value;
     profileLan = document.getElementById('selectLanguage').value;
